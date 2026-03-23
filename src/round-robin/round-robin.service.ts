@@ -14,12 +14,12 @@ export class RoundRobinService {
   ) {}
 
   async assignAgent() {
-    // 1. Get eligible agents
+    //  Get eligible agents
     const agents = await this.usersService.getAvailableAgents();
 
     if (!agents.length) return null;
 
-    // 2. Get state
+    //  Get state
     let state = await this.rrModel.findById('ROUND_ROBIN_STATE');
 
     if (!state) {
@@ -29,15 +29,15 @@ export class RoundRobinService {
       });
     }
 
-    // 3. Select agent
+    //  Select agent
     const index = state.lastAssignedAgentIndex % agents.length;
     const selectedAgent = agents[index];
 
-    // 4. Update pointer
+    // Update pointer
     state.lastAssignedAgentIndex = (index + 1) % agents.length;
     await state.save();
 
-    // 5. Increment agent load
+    // Increment agent load
     selectedAgent.currentActiveCount += 1;
     await selectedAgent.save();
 
