@@ -14,7 +14,7 @@ export class MessagesController {
     return this.messageService.createMessage({
       conversationId: body.conversationId,
       message: body.message,
-      senderType: SenderType.USER,
+      senderType: req.user.role === 'agent' ? SenderType.AGENT : SenderType.USER,
       senderId: req.user.userId,
     });
   }
