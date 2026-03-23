@@ -7,6 +7,7 @@ import {
   ConversationSchema,
 } from './schemas/conversation.schema';
 import { RoundRobinModule } from '../round-robin/round-robin.module'; 
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RoundRobinModule } from '../round-robin/round-robin.module';
       { name: Conversation.name, schema: ConversationSchema },
     ]),
     RoundRobinModule, 
+    UsersModule,
   ],
   providers: [ConversationsService],
   controllers: [ConversationsController],

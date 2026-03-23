@@ -2,6 +2,9 @@ import { Controller, Post, Get, Req, Param, Body, Patch } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
+import { UserConfirmDto } from './dto/user-confirm.dto';
 
 @Controller('conversations')
 @ApiBearerAuth('jwt')
@@ -27,4 +30,16 @@ export class ConversationsController {
   escalate(@Param('id') id: string) {
        return this.convoService.escalateConversation(id);
    }
+
+   @Patch(':id/resolve')
+   @Roles(Role.AGENT)
+    agentResolve(@Param('id') id: string, @Req() req) {
+      return this.convoService.agentMarkResolved(id, req.user.userId);
+    }
+
+    @Patch(':id/confirm')
+    @Roles(Role.USER)
+    userConfirm(@Param('id') id: string, @Req() req, @Body() body: UserConfirmDto) {
+      return this.convoService.userConfirmResolution(id, req.user.userId, body.confirm);
+    }
 }
