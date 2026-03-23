@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
+import { RoundRobinModule } from './round-robin/round-robin.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MessagesModule } from './messages/messages.module';
     UsersModule,
     ConversationsModule,
     MessagesModule,
+    RoundRobinModule,
   ],
 })
 export class AppModule {}

@@ -38,4 +38,14 @@ export class UsersService {
   async findById(id: string) {
     return this.userModel.findById(id);
   }
+
+  async getAvailableAgents() {
+    return this.userModel.find({
+        role: Role.AGENT,
+        isActive: true,
+        $expr: {
+        $lt: ['$currentActiveCount', '$maxActiveConversations'],
+        },
+    });
+    }
 }

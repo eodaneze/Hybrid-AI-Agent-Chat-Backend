@@ -6,12 +6,14 @@ import {
   Conversation,
   ConversationSchema,
 } from './schemas/conversation.schema';
+import { RoundRobinModule } from '../round-robin/round-robin.module'; 
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Conversation.name, schema: ConversationSchema },
     ]),
+    RoundRobinModule, 
   ],
   providers: [ConversationsService],
   controllers: [ConversationsController],

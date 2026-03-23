@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Req, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Req, Param, Body, Patch } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -22,4 +22,9 @@ export class ConversationsController {
   getOne(@Param('id') id: string) {
     return this.convoService.getConversationById(id);
   }
+
+  @Patch(':id/escalate')
+  escalate(@Param('id') id: string) {
+       return this.convoService.escalateConversation(id);
+   }
 }

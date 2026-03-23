@@ -24,6 +24,13 @@ export class User {
 
   @Prop({ default: true })
   isActive: boolean;
+
+
+  @Prop({ default: 0 })
+  currentActiveCount: number;
+
+  @Prop({ default: 5 })
+  maxActiveConversations: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
