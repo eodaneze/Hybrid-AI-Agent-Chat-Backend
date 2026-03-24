@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { RoundRobinModule } from './round-robin/round-robin.module';
+import { ChatGateway } from './chat/chat.gateway';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { RoundRobinModule } from './round-robin/round-robin.module';
     ConversationsModule,
     MessagesModule,
     RoundRobinModule,
+    ChatModule,
   ],
+  providers: [ChatGateway],
 })
 export class AppModule {}

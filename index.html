@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket Test</title>
+</head>
+<body>
+  <h2>Socket Test</h2>
+
+  <!-- ✅ Socket.IO client from CDN -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <script>
+    const socket = io("http://127.0.0.1:3000", {
+        transports: ['websocket']
+    });
+
+    socket.on("connect", () => {
+      console.log("✅ Connected:", socket.id);
+
+      const conversationId = "YOUR_CONVERSATION_ID";
+
+      socket.emit("joinConversation", conversationId);
+
+      socket.emit("sendMessage", {
+        conversationId,
+        message: "Hello from browser",
+        senderId: "USER_ID",
+        role: "user"
+      });
+    });
+
+    socket.on("newMessage", (data) => {
+      console.log("📩 New Message:", data);
+    });
+  </script>
+</body>
+</html>
