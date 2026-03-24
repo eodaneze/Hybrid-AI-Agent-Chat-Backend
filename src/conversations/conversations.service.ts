@@ -101,4 +101,11 @@ export class ConversationsService {
 
         return convo;
     }
+
+    async getALlConversations(){
+       return this.conversationModel
+          .find()
+          .populate('userId', 'name email')
+          .populate('assignedAgentId', 'name email')
+    }
 }

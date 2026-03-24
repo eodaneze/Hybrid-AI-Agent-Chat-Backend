@@ -1,11 +1,15 @@
-import { Controller, Post, Get, Req, Param, Body, Patch } from '@nestjs/common';
+import { Controller, Post, Get, Req, Param, Body, Patch, UseGuards } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { UserConfirmDto } from './dto/user-confirm.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
+
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('conversations')
 @ApiBearerAuth('jwt')
 export class ConversationsController {
@@ -41,5 +45,12 @@ export class ConversationsController {
     @Roles(Role.USER)
     userConfirm(@Param('id') id: string, @Req() req, @Body() body: UserConfirmDto) {
       return this.convoService.userConfirmResolution(id, req.user.userId, body.confirm);
+    }
+
+    @Get('admin/all')
+    @Roles(Role.ADMIN)
+    getAll(){
+        console.log(Role)
+        return this.convoService.getALlConversations()
     }
 }
