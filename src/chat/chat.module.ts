@@ -5,9 +5,14 @@ import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { StringValue } from 'ms'; 
+import { MongooseModule } from '@nestjs/mongoose';
+import { Conversation, ConversationSchema } from 'src/conversations/schemas/conversation.schema';
 
 @Module({
   imports: [
+      MongooseModule.forFeature([
+           { name: Conversation.name, schema: ConversationSchema },
+      ]),
     MessagesModule,
      JwtModule.registerAsync({
           inject: [ConfigService],

@@ -9,8 +9,10 @@ import {
 import { Socket, Server } from 'socket.io';
 import { MessagesService } from '../messages/messages.service';
 import { SenderType } from '../messages/schemas/message.schema';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Conversation } from 'src/conversations/schemas/conversation.schema';
 
 @WebSocketGateway({
   cors: {
@@ -24,7 +26,9 @@ export class ChatGateway implements OnGatewayConnection {
 
   constructor(
     private messageService: MessagesService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @InjectModel(Conversation.name)
+    private conversationModel: Model<Conversation>,
   ) {}
 
   handleConnection(client: Socket) {
@@ -40,7 +44,7 @@ export class ChatGateway implements OnGatewayConnection {
 
         client.data.user = payload
 
-        console.log("Authenticated socket:", payload)
+        // console.log("Authenticated socket:", payload)
     }catch(error){
          console.log("Invalid token")
          client.disconnect()
@@ -50,14 +54,38 @@ export class ChatGateway implements OnGatewayConnection {
 
   // Join room safely
   @SubscribeMessage('joinConversation')
-  handleJoin(
+  async handleJoin(
     @MessageBody() conversationId: string,
     @ConnectedSocket() client: Socket,
   ) {
     const user = client.data.user;
 
-    if (!user) return;
-    
+    if (!user){
+      client.disconnect()
+      return;
+    } 
+
+     
+    if (!Types.ObjectId.isValid(conversationId)) {
+      return { error: 'Invalid conversation id' };
+    }
+
+     const conversation = await this.conversationModel.findById(conversationId);
+
+    if (!conversation) {
+      return { error: 'Conversation not found' };
+    }
+
+    const isUserOwner = conversation.userId.toString() === user.sub;
+    const isAssignedAgent =
+      conversation.assignedAgentId &&
+      conversation.assignedAgentId.toString() === user.sub;
+
+    const isAdmin = user.role === 'admin';
+
+    if (!isUserOwner && !isAssignedAgent && !isAdmin) {
+      client.emit('error', 'Access denied');
+    }
     if (!client.rooms.has(conversationId)) {
       client.join(conversationId);
     }
@@ -80,6 +108,25 @@ export class ChatGateway implements OnGatewayConnection {
 
     if(!Types.ObjectId.isValid(conversationId)){
        return {error: 'Invalid conversation id'}
+    }
+
+
+    const conversation = await this.conversationModel.findById(conversationId);
+
+    if (!conversation) {
+      return { error: 'Conversation not found' };
+    }
+
+    
+    const isUserOwner = conversation.userId.toString() === user.sub;
+    const isAssignedAgent =
+      conversation.assignedAgentId &&
+      conversation.assignedAgentId.toString() === user.sub;
+
+    const isAdmin = user.role === 'admin';
+
+    if (!isUserOwner && !isAssignedAgent && !isAdmin) {
+      client.emit('error', 'Access denied');
     }
 
     
