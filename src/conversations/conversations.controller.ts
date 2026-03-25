@@ -17,7 +17,7 @@ export class ConversationsController {
 
   @Post()
   create(@Body() body: CreateConversationDto, @Req() req) {
-    return this.convoService.createConversation(req.user.userId);
+    return this.convoService.createConversation(req.user.userId,);
   }
 
   @Get()
