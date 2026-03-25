@@ -8,6 +8,7 @@ import { MessagesModule } from './messages/messages.module';
 import { RoundRobinModule } from './round-robin/round-robin.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { ChatModule } from './chat/chat.module';
+import { AgentsModule } from './agents/agents.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ChatModule } from './chat/chat.module';
     MessagesModule,
     RoundRobinModule,
     ChatModule,
+    AgentsModule,
   ],
   
 })
