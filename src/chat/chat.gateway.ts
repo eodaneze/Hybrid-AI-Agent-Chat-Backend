@@ -68,6 +68,24 @@ export class ChatGateway implements OnGatewayConnection {
       return;
     } 
 
+    if(!client.rooms.has(conversationId)){
+       client.join(conversationId);
+
+      //  create system message that agent has joined
+
+      if(user.role === 'agent'){
+
+          const systemMessage = 
+              await this.messageService.createSystemMessage(
+                conversationId,
+                `${user.name || 'Unknown'} has joined the conversation`
+              );
+
+            this.server.to(conversationId).emit('newMessage', systemMessage);
+      }
+
+    }
+
      
     if (!Types.ObjectId.isValid(conversationId)) {
       return { error: 'Invalid conversation id' };

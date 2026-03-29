@@ -7,6 +7,7 @@ export enum SenderType {
   USER = 'USER',
   AGENT = 'AGENT',
   AI = 'AI',
+  SYSTEM = 'SYSTEM'
 }
 
 @Schema({ timestamps: true })

@@ -61,4 +61,12 @@ export class MessagesService {
       .find({ conversationId: new Types.ObjectId(conversationId) })
       .sort({ createdAt: 1 });
   }
+
+   async createSystemMessage(conversationId: string, message: string) {
+      return this.messageModel.create({
+        conversationId,
+        message,
+        senderType: SenderType.SYSTEM,
+      });
+   }
 }

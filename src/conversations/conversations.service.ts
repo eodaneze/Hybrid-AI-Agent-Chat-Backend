@@ -6,6 +6,7 @@ import { RoundRobinService } from '../round-robin/round-robin.service';
 import { ConversationStatus } from './schemas/conversation.schema';
 import { UsersService } from 'src/users/users.service';
 import { ChatGateway } from 'src/chat/chat.gateway';
+import { MessagesService } from 'src/messages/messages.service';
 
 @Injectable()
 export class ConversationsService {
@@ -14,7 +15,8 @@ export class ConversationsService {
     private conversationModel: Model<ConversationDocument>,
     private chatGateway: ChatGateway,
     private roundRobinService: RoundRobinService,
-    private userService: UsersService
+    private userService: UsersService,
+    private messageService: MessagesService,
   ) {}
 
   async createConversation(userId: string) {
@@ -50,6 +52,18 @@ export class ConversationsService {
         convo.assignedAt = new Date();
 
         await convo.save();
+
+        const assignedAgent = await this.userService.findById(convo.assignedAgentId.toString());
+
+        // create system message
+        const systemMessage = await this.messageService.createSystemMessage(
+          convo._id.toString(),
+          `${assignedAgent?.name} joined the conversation`,
+        );
+        this.chatGateway.server
+          .to(convo._id.toString())
+          .emit('newMessage', systemMessage);
+
 
         this.chatGateway.server
           .to(`user_${convo.assignedAgentId}`)
@@ -136,6 +150,20 @@ export class ConversationsService {
 
       convo.subAgents.push(new Types.ObjectId(agentId));
       await convo.save();
+
+      const addedAgent = await this.userService.findById(agentId);
+
+      const systemMessage = 
+          await this.messageService.createSystemMessage(
+              conversationId,
+              `${addedAgent?.name} Joined the conversation`
+          )
+
+      this.chatGateway.server
+         .to(conversationId)
+         .emit('newMessage', systemMessage);
+
+         
 
       this.chatGateway.server
          .to(`user_${agentId}`)
