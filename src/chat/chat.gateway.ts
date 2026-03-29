@@ -169,6 +169,7 @@ export class ChatGateway implements OnGatewayConnection {
 
      client.to(conversationId).emit('typing', {
         userId: user.sub,
+        name: user.name || 'Unknown',
         role: user.role
      })
   }
@@ -184,7 +185,6 @@ export class ChatGateway implements OnGatewayConnection {
 
       client.to(conversationId).emit('stopTyping', {
           userId: user.sub,
-          role: user.role
       })
    }
 }
