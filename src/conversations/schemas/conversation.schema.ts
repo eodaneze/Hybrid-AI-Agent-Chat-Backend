@@ -20,6 +20,12 @@ export class Conversation {
   assignedAgentId: Types.ObjectId | null;
 
   @Prop({
+     type: [{type: Types.ObjectId, ref: 'User'}],
+     default: []
+  })
+  subAgents: Types.ObjectId[];
+  
+  @Prop({
     type: String,
     enum: ConversationStatus,
     default: ConversationStatus.AI_ACTIVE,

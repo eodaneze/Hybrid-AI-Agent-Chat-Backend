@@ -119,13 +119,20 @@ export class ChatGateway implements OnGatewayConnection {
 
     
     const isUserOwner = conversation.userId.toString() === user.sub;
-    const isAssignedAgent =
-      conversation.assignedAgentId &&
-      conversation.assignedAgentId.toString() === user.sub;
+
+    const isMainAgent = 
+       conversation.assignedAgentId && 
+       conversation.assignedAgentId.toString() === user.sub
+
+    const isSubAgent = 
+      conversation.subAgents && 
+      conversation.subAgents.some(
+        (id) => id.toString() === user.sub
+      );
 
     const isAdmin = user.role === 'admin';
 
-    if (!isUserOwner && !isAssignedAgent && !isAdmin) {
+    if (!isUserOwner && !isMainAgent && !isSubAgent  && !isAdmin) {
       client.emit('error', 'Access denied');
     }
 

@@ -7,6 +7,7 @@ import { Role } from 'src/common/enums/role.enum';
 import { UserConfirmDto } from './dto/user-confirm.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { AddSubAgentDto } from './dto/add-sub-agent.dto';
 
 
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -47,6 +48,15 @@ export class ConversationsController {
       return this.convoService.userConfirmResolution(id, req.user.userId, body.confirm);
     }
 
+    @Patch(':id/add-sub-agent')
+    @Roles(Role.AGENT, Role.ADMIN)
+    async addSubAgent(
+       @Param('id') id: string,
+       @Body() body: AddSubAgentDto,
+       @Req() req
+    ){
+       return this.convoService.addSubAgent(id, body.agentId, req.user.userId)
+    }
     @Get('admin/all')
     @Roles(Role.ADMIN)
     getAll(){

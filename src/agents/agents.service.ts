@@ -14,7 +14,12 @@ export class AgentsService {
   async getAssigned(agentId: string) {
    
     return this.conversationModel
-      .find({ assignedAgentId: new Types.ObjectId(agentId) })
+      .find({
+         $or: [
+            { assignedAgentId: new Types.ObjectId(agentId) },
+            { subAgents: new Types.ObjectId(agentId) }
+         ]
+      })
       .sort({ createdAt: -1 });
   }
 

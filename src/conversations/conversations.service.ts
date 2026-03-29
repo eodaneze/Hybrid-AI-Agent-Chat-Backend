@@ -102,10 +102,40 @@ export class ConversationsService {
         return convo;
     }
 
+  async addSubAgent(
+      conversationId: string,
+      agentId: string,
+      currentUser: any
+  ){
+      const convo = await this.conversationModel.findById(conversationId);
+
+      if(!convo) throw new Error('Conversation not found');
+
+      const isMainAgent = convo.assignedAgentId && convo.assignedAgentId.toString() === currentUser;
+
+      const isAdmin = currentUser.role === 'admin';
+
+      if(!isMainAgent && !isAdmin){
+          throw new ForbiddenException('Only main assigned agent or admin can add sub-agents')
+      }
+
+      if(convo.subAgents.some(
+        (id) => id.toString() === agentId
+      )){
+         return { message: 'Agent already a sub-agent' }
+      }
+
+      convo.subAgents.push(new Types.ObjectId(agentId));
+      await convo.save();
+
+      return {message: 'Sub-agent added successfully'}
+  }
+
     async getALlConversations(){
        return this.conversationModel
           .find()
           .populate('userId', 'name email')
           .populate('assignedAgentId', 'name email')
+          .populate('subAgents', 'name email')
     }
 }
