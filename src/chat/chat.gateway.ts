@@ -154,4 +154,37 @@ export class ChatGateway implements OnGatewayConnection {
     
     return { success: true };
   }
+
+  @SubscribeMessage('typing')
+  handleTyping(
+    @MessageBody() body: {conversationId: string},
+    @ConnectedSocket() client: Socket,
+  ){
+     const user = client.data.user;
+     if(!user) return;
+
+     const {conversationId} = body;
+
+     if(!conversationId) return;
+
+     client.to(conversationId).emit('typing', {
+        userId: user.sub,
+        role: user.role
+     })
+  }
+
+  @SubscribeMessage('stopTyping')
+  handleStopTyping(
+    @MessageBody() body: {conversationId: string},
+    @ConnectedSocket() client: Socket,
+  ){
+     const user = client.data.user;
+     if(!user) return;
+      const {conversationId} = body;
+
+      client.to(conversationId).emit('stopTyping', {
+          userId: user.sub,
+          role: user.role
+      })
+   }
 }
