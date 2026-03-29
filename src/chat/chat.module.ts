@@ -25,5 +25,6 @@ import { Conversation, ConversationSchema } from 'src/conversations/schemas/conv
         }),
   ],
   providers: [ChatGateway],
+  exports: [ChatGateway],
 })
 export class ChatModule {}

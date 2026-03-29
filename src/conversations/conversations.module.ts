@@ -13,6 +13,7 @@ import { MessagesModule } from 'src/messages/messages.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { StringValue } from 'ms';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { StringValue } from 'ms';
     RoundRobinModule, 
     UsersModule,
     MessagesModule,
-
+    ChatModule,
     JwtModule.registerAsync({
           inject: [ConfigService],
           useFactory: (config: ConfigService) => ({
@@ -33,7 +34,7 @@ import { StringValue } from 'ms';
           }),
         }),
   ],
-  providers: [ConversationsService, ChatGateway],
+  providers: [ConversationsService],
   controllers: [ConversationsController],
   exports: [ConversationsService],
 })
