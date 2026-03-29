@@ -16,7 +16,7 @@ export class AdminService {
     private userModel: Model<User>,
   ) {}
 
-  // ✅ SYSTEM OVERVIEW
+  //SYSTEM OVERVIEW
   async getOverview() {
     const [
       totalUsers,
@@ -41,26 +41,28 @@ export class AdminService {
     };
   }
 
-  // ✅ AGENTS + LOAD
+  // AGENTS + LOAD
   async getAgents() {
     return this.userModel.find({ role: 'agent' }).select('-password');
   }
 
-  // ✅ ALL CONVERSATIONS (with optional filters)
+  // ALL CONVERSATIONS (with optional filters)
   async getConversations(query: any) {
     const filter: any = {};
 
     if (query.status) filter.status = query.status;
     if (query.agentId) filter.assignedAgentId = query.agentId;
+    if (query.subAgentId) filter.subAgents = query.subAgentId;
 
     return this.conversationModel
       .find(filter)
       .populate('userId', 'name email')
       .populate('assignedAgentId', 'name email')
+      .populate('subAgents', 'name email')
       .sort({ createdAt: -1 });
   }
 
-  // ✅ SINGLE CONVERSATION DETAILS
+  // SINGLE CONVERSATION DETAILS
   async getConversationDetails(conversationId: string) {
     const conversation = await this.conversationModel
       .findById(conversationId)

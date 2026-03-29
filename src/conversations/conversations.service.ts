@@ -5,12 +5,14 @@ import { Model, Types } from 'mongoose';
 import { RoundRobinService } from '../round-robin/round-robin.service';
 import { ConversationStatus } from './schemas/conversation.schema';
 import { UsersService } from 'src/users/users.service';
+import { ChatGateway } from 'src/chat/chat.gateway';
 
 @Injectable()
 export class ConversationsService {
   constructor(
     @InjectModel(Conversation.name)
     private conversationModel: Model<ConversationDocument>,
+    private chatGateway: ChatGateway,
     private roundRobinService: RoundRobinService,
     private userService: UsersService
   ) {}
@@ -48,6 +50,13 @@ export class ConversationsService {
         convo.assignedAt = new Date();
 
         await convo.save();
+
+        this.chatGateway.server
+          .to(`user_${convo.assignedAgentId}`)
+          .emit('newAssignment', {
+            conversationId: convo._id,
+            message: 'A new conversation has been assigned to you',
+          });
 
         return convo;
     }
@@ -127,6 +136,13 @@ export class ConversationsService {
 
       convo.subAgents.push(new Types.ObjectId(agentId));
       await convo.save();
+
+      this.chatGateway.server
+         .to(`user_${agentId}`)
+         .emit('addedToConversation', {
+            conversationId: convo._id,
+            message: 'You have been added as a sub-agent to a conversation'
+         })
 
       return {message: 'Sub-agent added successfully'}
   }

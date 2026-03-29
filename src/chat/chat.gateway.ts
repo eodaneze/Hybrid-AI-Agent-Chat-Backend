@@ -44,6 +44,9 @@ export class ChatGateway implements OnGatewayConnection {
 
         client.data.user = payload
 
+        // Join user-specific room for notifications
+        client.join(`user_${payload.sub}`)
+
         // console.log("Authenticated socket:", payload)
     }catch(error){
          console.log("Invalid token")
